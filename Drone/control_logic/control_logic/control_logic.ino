@@ -4,7 +4,7 @@
  */
 
 float pitch_goal, roll_goal, yaw_goal;
-float pitch_input, roll_input, yaw_input;
+float pitch_input, roll_input, yaw_input, throttle_input;
 
 // setup the gains for all PID values for each control variable
 float pid_pitch_p_gain, pid_pitch_i_gain, pid_pitch_d_gain;
@@ -53,25 +53,27 @@ void loop() {
 
 
 	// calculate the output for each motor
-	motor1_output = 0;
-	motor2_output = 0;
-	motor3_output = 0;
-	motor4_output = 0;
-
-  
-  
+	motor1_output = throttle_input;
+	motor2_output = throttle_input;
+	motor3_output = throttle_input;
+	motor4_output = throttle_input;
+  // left front
   if(<THROTTLE_MIN) motor1_output = THROTTLE_MIN;
   if(>THROTTLE_MAX) motor1_output = THROTTLE_MAX;
-  
+  else motor1_output = 
+  // right front
   if(<THROTTLE_MIN) motor2_output = THROTTLE_MIN;
   if(>THROTTLE_MAX) motor2_output = THROTTLE_MAX;
-  
+  else motor2_output = 
+  // right back
   if(<THROTTLE_MIN) motor3_output = THROTTLE_MIN;
   if(>THROTTLE_MAX) motor3_output = THROTTLE_MAX;
-  
+  else motor3_output = 
+  // left back
   if(<THROTTLE_MIN) motor4_output = THROTTLE_MIN;
   if(>THROTTLE_MAX) motor4_output = THROTTLE_MAX;
-
+  else motor4_output = 
+  
   // D step  
   pid_pitch_last_error = pid_pitch_error;
   pid_roll_last_error = pid_roll_error;

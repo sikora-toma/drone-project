@@ -4,7 +4,8 @@
  */
 
 float pitch_goal, roll_goal, yaw_goal;
-float pitch_input, roll_input, yaw_input, throttle_input;
+float pitch_input, roll_input, yaw_input;
+int throttle_input;
 
 // setup the gains for all PID values for each control variable
 float pid_pitch_p_gain, pid_pitch_i_gain, pid_pitch_d_gain;
@@ -82,35 +83,35 @@ void loop() {
 
   
   if (start == 2){                                                          //The motors are started.
-    if (throttle > 1800) throttle = 1800;                                   //We need some room to keep full control at full throttle.
-    esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 1 (front-right - CCW)
-    esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 2 (rear-right - CW)
-    esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw; //Calculate the pulse for esc 3 (rear-left - CCW)
-    esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw; //Calculate the pulse for esc 4 (front-left - CW)
+    if (throttle_input > THROTTLE_MAX_CONTROL) throttle_input = THROTTLE_MAX_CONTROL;                                   //We need some room to keep full control at full throttle.
+    motor1_output = throttle_input - pid_pitch_output + pid_roll_output - pid_yaw_output; //Calculate the pulse for esc 1 (front-right - CCW)
+    motor2_output = throttle_input + pid_pitch_output + pid_roll_output + pid_yaw_output; //Calculate the pulse for esc 2 (rear-right - CW)
+    motor3_output = throttle_input + pid_pitch_output - pid_roll_output - pid_yaw_output; //Calculate the pulse for esc 3 (rear-left - CCW)
+    motor4_output = throttle_input - pid_pitch_output - pid_roll_output + pid_yaw_output; //Calculate the pulse for esc 4 (front-left - CW)
 
     if (battery_voltage < 1240 && battery_voltage > 800){                   //Is the battery connected?
-      esc_1 += esc_1 * ((1240 - battery_voltage)/(float)3500);              //Compensate the esc-1 pulse for voltage drop.
-      esc_2 += esc_2 * ((1240 - battery_voltage)/(float)3500);              //Compensate the esc-2 pulse for voltage drop.
-      esc_3 += esc_3 * ((1240 - battery_voltage)/(float)3500);              //Compensate the esc-3 pulse for voltage drop.
-      esc_4 += esc_4 * ((1240 - battery_voltage)/(float)3500);              //Compensate the esc-4 pulse for voltage drop.
+       motor1_output += motor1_output * ((1240 - battery_voltage) / (float)3500);              //Compensate the esc-2 pulse for voltage drop.
+       motor2_output += motor2_output * ((1240 - battery_voltage) / (float)3500);              //Compensate the esc-1 pulse for voltage drop.
+       motor3_output += motor3_output * ((1240 - battery_voltage) / (float)3500);              //Compensate the esc-3 pulse for voltage drop.
+       motor4_output += motor4_output * ((1240 - battery_voltage)/(float)3500);              //Compensate the esc-4 pulse for voltage drop.
     } 
 
-    if (esc_1 < 1100) esc_1 = 1100;                                         //Keep the motors running.
-    if (esc_2 < 1100) esc_2 = 1100;                                         //Keep the motors running.
-    if (esc_3 < 1100) esc_3 = 1100;                                         //Keep the motors running.
-    if (esc_4 < 1100) esc_4 = 1100;                                         //Keep the motors running.
+    if (motor1_output < 1100) motor1_output = 1100;                                         //Keep the motors running.
+    if (motor2_output < 1100) motor2_output = 1100;                                         //Keep the motors running.
+    if (motor3_output < 1100) motor3_output = 1100;                                         //Keep the motors running.
+    if (motor4_output < 1100) motor4_output = 1100;                                         //Keep the motors running.
 
-    if(esc_1 > 2000)esc_1 = 2000;                                           //Limit the esc-1 pulse to 2000us.
-    if(esc_2 > 2000)esc_2 = 2000;                                           //Limit the esc-2 pulse to 2000us.
-    if(esc_3 > 2000)esc_3 = 2000;                                           //Limit the esc-3 pulse to 2000us.
-    if(esc_4 > 2000)esc_4 = 2000;                                           //Limit the esc-4 pulse to 2000us.  
+    if(motor1_output > 2000) motor1_output = 2000;                                           //Limit the esc-1 pulse to 2000us.
+    if (motor2_output > 2000)motor2_output = 2000;                                           //Limit the esc-2 pulse to 2000us.
+    if (motor3_output > 2000)motor3_output = 2000;                                           //Limit the esc-3 pulse to 2000us.
+    if (motor4_output > 2000)motor4_output = 2000;                                           //Limit the esc-4 pulse to 2000us.  
   }
 
   else{
-    esc_1 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-1.
-    esc_2 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-2.
-    esc_3 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-3.
-    esc_4 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-4.
+      motor1_output = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-1.
+      motor2_output = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-2.
+      motor3_output = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-3.
+      motor4_output = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-4.
   }
 
 }

@@ -25,15 +25,23 @@
 //  3 for pins D0-D7
 #define PORTS_TO_USE 3
 // channel index connected to the throttle on the controller, throttle min and max val
-#define THROTTLE_INDEX 4
+#define THROTTLE_INDEX 3
 #define THROTTLE_MIN 1100
 #define THROTTLE_MAX 1500
 
+#define RECIEVER_MIN 1000
+#define RECIEVER_MAX 2000
+
+// define indexes controlling the drone motion
+#define PITCH_INDEX 4
+#define ROLL_INDEX 5
+#define YAW_INDEX 2
+
 // define the pin to which the ESC signal is connected
-#define ESC4_PIN 6
-#define ESC1_PIN 9
-#define ESC2_PIN 10
-#define ESC3_PIN 11
+#define ESC1_PIN 6
+#define ESC2_PIN 9
+#define ESC3_PIN 10
+#define ESC4_PIN 11
 
 // define the length of gyro calibration loop; CALIBRATION_LOOP_LEN * 3 / 1000 seconds
 #define CALIBRATION_LOOP_LEN 2000
@@ -42,8 +50,6 @@
 const byte numInputChannels = 6;
 
 int channelVals[numInputChannels] = {0,0,0,0,0,0};
-const uint8_t channelPins[numInputChannels] = {2,3,4,5,6,7};
-uint8_t* channelPinPointer = channelPins;
 
 // create a global FastRCReader instance to communicate with the controller
 FastRCReader RC;
@@ -80,25 +86,25 @@ void setup() {
   // initialize the RC receiver connection
   RC.begin();
   // set the channel pins in use
-  //RC.addChannel(channelPinPointer);
+  //RC.addChannel(channelPin);
+  RC.addChannel((uint8_t)0);
+  RC.addChannel((uint8_t)1);
   RC.addChannel((uint8_t)2);
   RC.addChannel((uint8_t)3);
   RC.addChannel((uint8_t)4);
   RC.addChannel((uint8_t)5);
-  RC.addChannel((uint8_t)6);
-  RC.addChannel((uint8_t)7);
 
   pinMode(LED_BUILTIN, OUTPUT);
 
   // initialize the serial connection to print values
   Serial.begin(9600);
-  ESC1.attach(ESC_PIN1);
+  ESC1.attach(ESC1_PIN);
   ESC1.writeMicroseconds(1000);
-  ESC2.attach(ESC_PIN2);
+  ESC2.attach(ESC2_PIN);
   ESC2.writeMicroseconds(1000);
-  ESC3.attach(ESC_PIN3);
+  ESC3.attach(ESC3_PIN);
   ESC3.writeMicroseconds(1000);
-  ESC4.attach(ESC_PIN4);
+  ESC4.attach(ESC4_PIN);
   ESC4.writeMicroseconds(1000);
     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
   delay(2000);
@@ -114,16 +120,12 @@ void setup() {
 void loop() {
   // iterate throught all the channels, read the frequency and print it to the Serial monitor and plotter
   for(int i = 0; i<numInputChannels; i++){
-    channelVals[i] = map(RC.getFreq((uint8_t)i), 1000, 2000, THROTTLE_MIN, THROTTLE_MAX);
-    Serial.print(channelVals[i]);
-    if(i < numInputChannels-1)  Serial.print(",");
+    channelVals[i] = RC.getFreq((uint8_t)i);
+    //Serial.print(channelVals[i]);
+    //if(i < numInputChannels-1)  Serial.print(",");
   }
-  Serial.println();
-  // set the throttle values to the desired value
-  if(channelVals[THROTTLE_INDEX]<THROTTLE_MIN)       ESC.writeMicroseconds(THROTTLE_MIN);
-  else if(channelVals[THROTTLE_INDEX]>THROTTLE_MAX)  ESC.writeMicroseconds(THROTTLE_MAX);
-  else                          ESC.writeMicroseconds((int)channelVals[THROTTLE_INDEX]);
-
+  //Serial.println();
+  
   // extract pitch and roll values
   read_mpu_values();
   calculate_pitch_and_roll();

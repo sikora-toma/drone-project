@@ -23,7 +23,7 @@ void setup() {
 
   
   // gyro calibration
-  //Serial.println("Calibrating gyro");
+  Serial.println("Calibrating gyro");
   for(int i=0; i<CALIBRATION_LOOP_LEN; i++){
     //if(i%250==0) Serial.println((String)"x="+gyro_x_cal+" y="+gyro_y_cal+" z="+gyro_z_cal);
     read_mpu_values();
@@ -73,18 +73,18 @@ void loop() {
   angle_pitch_output = angle_pitch;
   angle_roll_output = angle_roll;
   // Dampen the pitch angle
-  //angle_pitch_output = angle_pitch_output * 0.9 + angle_pitch * 0.1;   //Take 90% of the output pitch value and add 10% of the raw pitch value
-  //if(temp_counter++%250==0){
-    //Serial.println();
-    //Serial.println((String)"Gyro values:\t\t x="+gyro_x+" y="+gyro_y+" z="+gyro_z);
-    //Serial.println((String)"Accelerometer values:\tx="+acc_x+" y="+acc_y+" z="+acc_z);
-    //Serial.println((String)"Pitch angle: "+angle_pitch_output);
+  angle_pitch_output = angle_pitch_output * 0.9 + angle_pitch * 0.1;   //Take 90% of the output pitch value and add 10% of the raw pitch value
+  if(temp_counter++%250==0){
+    Serial.println();
+    Serial.println((String)"Gyro values:\t\t x="+gyro_x+" y="+gyro_y+" z="+gyro_z);
+    Serial.println((String)"Accelerometer values:\tx="+acc_x+" y="+acc_y+" z="+acc_z);
+    Serial.println((String)"Pitch angle: "+angle_pitch_output);
     Serial.print(angle_pitch_output);
     //Serial.print((String)","+angle_pitch_acc);
     Serial.print((String)","+angle_roll_output);
     //Serial.print((String)","+angle_roll_acc);
     Serial.println();
-  //}
+  }
   while(temp_counter-micros()<4000);
   temp_counter = micros();
 }

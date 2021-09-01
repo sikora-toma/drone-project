@@ -14,11 +14,12 @@
 //  2 for pins A0-A5
 //  3 for pins D0-D7
 #define PORTS_TO_USE 3
+#define NUMBER_OF_PORTS 6
 
 // define the number of input channels you are going to use
-const byte numInputChannels = 6;
+const byte numInputChannels = NUMBER_OF_PORTS;
 
-const uint8_t channelPins[numInputChannels] = {2,3,4,5,6,7};
+const uint8_t channelPins[numInputChannels] = {0,1,2,3,4,5};
 uint8_t* channelPinPointer = channelPins;
 
 // create a global FastRCReader instance to communicate with the controller
@@ -31,12 +32,12 @@ void setup() {
   RC.begin();
   // set the channel pins in use
   //RC.addChannel(channelPinPointer);
+  RC.addChannel((uint8_t)0);
+  RC.addChannel((uint8_t)1);
   RC.addChannel((uint8_t)2);
   RC.addChannel((uint8_t)3);
   RC.addChannel((uint8_t)4);
   RC.addChannel((uint8_t)5);
-  RC.addChannel((uint8_t)6);
-  RC.addChannel((uint8_t)7);
 }
 
 void loop() {

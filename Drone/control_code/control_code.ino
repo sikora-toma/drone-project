@@ -66,11 +66,22 @@ float angle_roll, angle_roll_acc;
 float angle_roll_output;
 boolean mpu_set = false;
 
-// pid calculation variables
-float pid_error_temp;
-float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;
-float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;
-float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;
+float pitch_goal, roll_goal, yaw_goal;
+int throttle;
+
+// PID calculation variables
+
+// setup the gains for all PID values for each control variable
+float pid_pitch_p_gain, pid_pitch_i_gain, pid_pitch_d_gain;
+float pid_roll_p_gain, pid_roll_i_gain, pid_roll_d_gain;
+float pid_yaw_p_gain, pid_yaw_i_gain, pid_yaw_d_gain;
+// setup the PID output variables
+float pid_pitch_output, pid_roll_output, pid_yaw_output;
+// setup max values for PID output
+float pid_pitch_max, pid_roll_max, pid_yaw_max;
+// setup integral and derivative auxiliary variables
+float pid_pitch_i_mem, pid_roll_i_mem, pid_yaw_i_mem, pid_pitch_d_last, pid__pitch_last_error, pid__roll_last_error, pid__yaw_last_error;
+float pid_pitch_error, pid_roll_error, pid_yaw_error;
 
 // create global Servo instances
 Servo ESC1, ESC2, ESC3, ESC4;
@@ -240,4 +251,10 @@ void setup_mpu_6050_registers(){
   Wire.write(0x1A);                                                         //We want to write to the CONFIG register (1A hex)
   Wire.write(0x03);                                                         //Set the register bits as 00000011 (Set Digital Low Pass Filter to ~43Hz)
   Wire.endTransmission();                                                   //End the transmission with the gyro 
+}
+// function calculates the needed output values for escs with a PID controller
+void calculate_pid() {
+    pid_pitch_error = angle_pitch_output - pitch_goal;
+    pid_roll_error = angle_roll_output - roll_goal;
+    pid_yaw_error = angle_y
 }
